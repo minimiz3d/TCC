@@ -3,17 +3,29 @@ t = textscan(text_file, '%f%f', 'Delimiter',',');
 fclose(text_file);
 x=0:1:200;
 y1=t{2};
+min(y1)
+mean(y1)
+max(y1)
+std(y1)
 
 text_file = fopen('2.txt');
 t = textscan(text_file, '%f%f', 'Delimiter',',');
 fclose(text_file);
 y2=t{2};
+min(y2)
+mean(y2)
+max(y2)
+std(y2)
 
 text_file = fopen('3.txt');
 t = textscan(text_file, '%f%f', 'Delimiter',',');
 fclose(text_file);
 y3=t{2};
 [maxy,idx]=max(y3);
+min(y3)
+mean(y3)
+max(y3)
+std(y3)
 
 plot(x,y1,'o',x,y2,'o',x,y3,'o',x(idx),y3(idx),'pg')
 title('Medidas com carro estacionado sobre a vaga')

@@ -173,4 +173,8 @@ Wire Wire Line
 	6050 2650 6100 2650
 Wire Wire Line
 	5350 3050 6050 3050
+Text GLabel 3350 2200 0    60   Input ~ 0
+VCC
+Wire Wire Line
+	3350 2200 3450 2200
 $EndSCHEMATC
