@@ -1,46 +1,46 @@
 "use strict";
 
 var num_vagas_disponiveis = "0";
+var marker;
 
 // Create a client instance
 // client = new Paho.MQTT.Client(location.hostname, Number(location.port), "clientId");
-var host = "m13.cloudmqtt.com";
-var port = 11277;
-var client = new Paho.MQTT.Client(host, port, "my_jsclient");
+var host = "m23.cloudmqtt.com";
+var port = 30171;
+
+// Create a client instance
+var client = new Paho.MQTT.Client("m13.cloudmqtt.com", 31277, "aaa");
+// var client = new Paho.MQTT.Client('iot.eclipse.org', 443, "/ws", '');
+//Example client = new Paho.MQTT.Client("m11.cloudmqtt.com", 32903, "web_" + parseInt(Math.random() * 100, 10));
 
 // set callback handlers
 client.onConnectionLost = onConnectionLost;
 client.onMessageArrived = onMessageArrived;
 
 // connect the client
-// client.connect({ onSuccess: onConnect });
-var options = {
+var connectionOptions = {
   useSSL: true,
-  userName: "kcflxtae",
-  password: "xnPQvjYVZmxQ",
-  onSuccess: onConnect,
-  onFailure: doFail,
-  timeout: 3
+  // userName: "kcflxtae",
+  // password: "xnPQvjYVZmxQ",
+  onSuccess: onConnect
 }
-client.connect(options);
+client.connect(connectionOptions);
+
 
 // called when the client connects
 function onConnect() {
   // Once a connection has been made, make a subscription and send a message.
-  console.log("onConeect - success!");
-  client.subscribe("/cloudmqtt");
-  message = new Paho.MQTT.Message("Hello CloudMQTT");
-  message.destinationName = "/cloudmqtt";
+  console.log("entrou");
+  marker.setLabel("666");
+  client.subscribe("World");
+  message = new Paho.MQTT.Message("Hello");
+  message.destinationName = "World";
   client.send(message);
-}
-
-function doFail(e) {
-  console.log("puta merda");
-  console.log(e);
 }
 
 // called when the client loses its connection
 function onConnectionLost(responseObject) {
+  marker.setLabel("123");
   if (responseObject.errorCode !== 0) {
     console.log("onConnectionLost:" + responseObject.errorMessage);
   }
@@ -49,7 +49,6 @@ function onConnectionLost(responseObject) {
 // called when a message arrives
 function onMessageArrived(message) {
   console.log("onMessageArrived:" + message.payloadString);
-  num_vagas_disponiveis = Number(message.payloadString);
 }
 
 function initMap() {
@@ -59,7 +58,7 @@ function initMap() {
     center: coords,
     scrollwheel: false
   });
-  var marker = new google.maps.Marker({
+  marker = new google.maps.Marker({
     title: "Vagas disponíveis",
     position: coords,
     animation: google.maps.Animation.DROP,
