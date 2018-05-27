@@ -1,25 +1,17 @@
+// Variáveis
 var num_vagas_disponiveis = "0";
 var marker;
 
 // Create a client instance
-var host = "m13.cloudmqtt.com";
-var port = 11277;
-
-// Create a client instance
-// client = new Paho.MQTT.Client("iot.eclipse.org", 443, "/ws", "kcflxtae");
-client = new Paho.MQTT.Client(host, port, client_id="web_" + parseInt(Math.random() * 100, 10));
-
-// set callback handlers
-client.onConnectionLost = onConnectionLost;
-client.onMessageArrived = onMessageArrived;
+HOST = "broker.hivemq.com"
+PORT = 8000
+CLIENT_ID = "arthur_teste"
+client = new Paho.MQTT.Client(HOST, PORT, CLIENT_ID)
 
 // connect the client
 var connectionOptions = {
-  useSSL: true,
   keepAliveInterval: 20,
   timeout: 3,
-  userName: "kcflxtae",
-  password: "xnPQvjYVZmxQ",
   onSuccess: onConnect
 }
 client.connect(connectionOptions);
@@ -29,11 +21,11 @@ client.connect(connectionOptions);
 function onConnect() {
   // Once a connection has been made, make a subscription and send a message.
   console.log("entrou");
-  marker.setLabel("666");
-  client.subscribe("World");
-  message = new Paho.MQTT.Message("cheguei nessa porra");
-  message.destinationName = "World";
-  client.send(message);
+  marker.setLabel("on");
+  
+  var topic = "vagas/cpd/"
+  client.subscribe(topic);
+  console.log("Inscrito em: " + topic)
 }
 
 // called when the client loses its connection
@@ -47,8 +39,10 @@ client.onConnectionLost = function (responseObject) {
 // called when a message arrives
 client.onMessageArrived = function (message) {
   console.log("onMessageArrived:" + message.payloadString);
+  marker.setLabel(message.payloadString);
 }
 
+// Inicializa mapa
 function initMap() {
   var coords = { lat: -29.720415, lng: -53.7141605 };
   var map = new google.maps.Map(document.getElementById('map'), {
