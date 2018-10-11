@@ -1,0 +1,18 @@
+Foram realizados 200 testes no total, sendo divididos em 100 testes entre às 8:40 e 9:30, e os outros 100 às entre às 17h e 18h, ambos no dia 26/09/2018. 
+Temperatura entre 20 e 22 graus Celsius nos momentos dos testes. Nublado.
+Cada bateria de 100 testes foi realizada da seguinte maneira:
+* Foram realizados 10 testes por vaga (5 vagas ocupadas e 5 desocupadas), resultando em 50 testes dentre estas categorias.
+* Cada teste consistiu na média aritimética de 5000 amostras do LDR em determinado instante. 
+* Foram definidos 6 thresholds: A, B, C, D, E e F.
+A >= 400
+B >= 450 e < 500
+C >= 500 e < 550
+D >= 550 e < 600
+E >= 600 e < 650
+F >= 650
+
+Os resultados foram os seguintes:
+1. VAGA DESOCUPADAS: 100% dos 100 testes indicaram o threshold F.
+
+2. VAGA OCUPADAS: Nos primeiros 50 testes (manhã), foi verificado que 80% dos testes resultaram no threshold C e os outros 20% no threshold D.
+Já pela tarde, 50% dos 50 casos apresentaram o threshold B; 40% indicaram threshold D e 10% o threshold C.
