@@ -33,10 +33,11 @@ def on_message(client, userdata, message):
 	print('------------------------------')
 	print('topic: %s' % message.topic)
 	print('payload: %s' % PAYLOAD)
+	print('payload_type:' + str(type(PAYLOAD)))
 	print('qos: %d' % message.qos)
     
 	# Envia para aplicação
-	data = json.loads(PAYLOAD)["payload_raw"]
+	data = json.loads(PAYLOAD.decode("utf-8"))["payload_raw"]
 	print("#### ENVIANDO: " + str(data) + " ####")
 	if str(data).__eq__("AA=="):
 		data = "0"
