@@ -2,9 +2,6 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-import os
-os.chrdir()
-
 N = 11
 unavailable_data = (
     52, 51.25, 51, 
@@ -78,9 +75,6 @@ def autolabel(rects):
         ax.text(rect.get_x() + rect.get_width()/2., 1.05*height,
                 '%d' % int(height),
                 ha='center', va='bottom')
-
-# autolabel(rects1)
-# autolabel(rects2)
 
 percentages = [
     98, 100, 97, 
