@@ -1,5 +1,5 @@
 class Consumo:
-    def __init__(self, capacidade_bat=2850, t_off=30):
+    def __init__(self, capacidade_bat=2348, t_off=30):
         self.capacidade_bat = capacidade_bat
 
         self.i_off = 0.0055
@@ -45,6 +45,7 @@ class Consumo:
 
     def get_num_dias(self):
         return self._get_num_horas()/24        
+
 
 if __name__ == '__main__':
     consumo = Consumo(capacidade_bat=2348)
