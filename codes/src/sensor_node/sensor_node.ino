@@ -1,73 +1,59 @@
-#include <VirtualWire.h>
-#include "LowPower.h"
+#include <LowPower.h>
+#include <RCSwitch.h>
 
-// Tempo em segundos em modo de baixo consumo (>= 8s)
-#define SLEEP_TIME  8
-#define NUM_SAMPLES 500   
-#define DEBUG       true
+#define NUM_SAMPLES 500
+#define LDR_THRESHOLD 600
+#define LDR_VIN_PIN 7
+#define LDR_DATA_PIN 5
+#define TX_VIN_PIN 8
+#define TX_DATA_PIN 10
+#define TIME_SLEEPING 30
+#define NODE_ID 0
 
-// ~DEBUG
-void teste(String status) {
-  if (status.toFloat() > 700) {
-    digitalWrite(13, HIGH);
-    delay(1000);
-    digitalWrite(13, LOW);
-  }
-}
+RCSwitch mySwitch = RCSwitch();
 
-void transmitData(const char *data) {
-  vw_send((uint8_t *)data, strlen(data));
-  vw_wait_tx();
-}
-
-void sendPacket(String status) {
-  const char *start = "T1START";
-  transmitData(start);
-  // delay(50);
-
-  char payloadBuffer[10];
-  status.toCharArray(payloadBuffer, 10);
-  transmitData(payloadBuffer);
-  // delay(50);
-
-  const char *end = "T1END";
-  transmitData(end);
-
-  // ~DEBUG
-  if (DEBUG)
-    teste(status);
-}
-
-float getCurrentStatus() {
+float get_ldr_value() {
+  // Obtém amostras do LDR
   float status = 0.0;
   for (int i = 0; i < NUM_SAMPLES; i++) 
-    status += analogRead(A0);
+    status += analogRead(LDR_DATA_PIN);
 
   return status / NUM_SAMPLES;
 }
 
-void sleep() {
-  for (int i = 0; i < SLEEP_TIME; i++) 
-    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+void read_and_send_data() {
+  // Obtém medidas do sensor
+  digitalWrite(LDR_VIN_PIN, HIGH);
+  float ldr_measure = get_ldr_value();
+
+  // Transmite os dados
+  digitalWrite(TX_VIN_PIN, HIGH);
+  mySwitch.send(NODE_ID, 24);
+  mySwitch.send(int(ldr_measure), 24);
 }
 
 void setup() {
-  // Setup do transceiver
-  vw_set_ptt_inverted(true);
-  vw_set_tx_pin(8);
-  vw_setup(2000);
+  // Configura pinos de alimentação do sensor e RF
+  pinMode(LDR_VIN_PIN, OUTPUT);
+  pinMode(TX_VIN_PIN, OUTPUT);
 
-  // LED interno ~DEBUG
-  pinMode(13, OUTPUT);
+  // Configura pino de dados do RF
+  mySwitch.enableTransmit(TX_DATA_PIN);
 }
 
 void loop() {
-  // Obtém o estado atual da vaga
-  String status = String(getCurrentStatus());
+  // Permanece em modo de baixo consumo durante 'TIME_SLEEPING' segundos
+  for (int i = 0; i < TIME_SLEEPING; i++) 
+    LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF); 
+  
+  // Sensor realiza leitura e transmite estado da vaga
+  read_and_send_data();
 
-  // Transmite este dado  
-  sendPacket(status);
-
-  // Entra em modo de baixo consumo
-  sleep();
+  // Volta ao modo de baixo consumo
+  digitalWrite(LDR_VIN_PIN, LOW);
+  digitalWrite(TX_VIN_PIN, LOW);
 }
+
+
+
+

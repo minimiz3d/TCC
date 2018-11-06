@@ -6,11 +6,20 @@
 */
 
 #include <RCSwitch.h>
+#include "LowPower.h"
 
 #define LDR_PIN 5
 #define NUM_SAMPLES 5000
+#define SLEEP_TIME 8
 
+int counter = 0;
 RCSwitch mySwitch = RCSwitch();
+
+void sleepSeconds(int seconds) {
+  for (int i = 0; i < seconds; i++) { 
+     LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF); 
+  }
+}
 
 void setup() {
   pinMode(9, OUTPUT);
@@ -26,7 +35,7 @@ void setup() {
   // mySwitch.setPulseLength(320);
   
   // Optional set number of transmission repetitions.
-  // mySwitch.setRepeatTransmit(15);
+  mySwitch.setRepeatTransmit(15);
   
 }
 
@@ -39,31 +48,21 @@ float getCurrentStatus() {
 }
 
 void loop() {
+  // Led on
   digitalWrite(9, HIGH);
-  /* See Example: TypeA_WithDIPSwitches */
-//  mySwitch.switchOn("11111", "00010");
-//  delay(1000);
-//  mySwitch.switchOff("11111", "00010");
-//  delay(1000);
 
-  /* Same switch as above, but using decimal code */
-  mySwitch.send(int(getCurrentStatus()), 24);
-  delay(100);  
-  mySwitch.send(int(getCurrentStatus()), 24);
-  delay(100);  
+  // Transmits data
+  mySwitch.send(counter, 24);
+  
+  // Enter power down state for 8 s with ADC and BOD module disabled
+  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  sleepSeconds(1);
 
-  /* Same switch as above, but using binary code */
-//  mySwitch.send("000000000001010100010001");
-//  delay(1000);  
-//  mySwitch.send("000000000001010100010100");
-//  delay(1000);
-
-  /* Same switch as above, but tri-state code */ 
-//  mySwitch.sendTriState("00000FFF0F0F");
-//  delay(1000);  
-//  mySwitch.sendTriState("00000FFF0FF0");
-//  delay(1000);
-
+  // Next packet
+  counter++;
+  
+  // Led off
   digitalWrite(9, LOW);
-  delay(1000);
+
+  sleepSeconds(5);
 }

@@ -1,114 +1,56 @@
-#include <RCSwitch.h>
 #include <LowPower.h>
-#include <VirtualWire.h>
+#include <RCSwitch.h>
 
 #define NUM_SAMPLES 500
-#define SLEEP_TIME  8
-unsigned long time;
+#define LDR_THRESHOLD 600
+#define LDR_VIN_PIN 7
+#define LDR_DATA_PIN 5
+#define TX_VIN_PIN 8
+#define TX_DATA_PIN 10
+#define TIME_SLEEPING 5
+#define NODE_ID 0
+
 RCSwitch mySwitch = RCSwitch();
 
-float getCurrentStatus() {
+float get_ldr_value() {
+  // Obtém amostras do LDR
   float status = 0.0;
   for (int i = 0; i < NUM_SAMPLES; i++) 
-    status += analogRead(A0);
+    status += analogRead(LDR_DATA_PIN);
 
   return status / NUM_SAMPLES;
 }
 
-
-void getCurrentTimeAndPrint() {
-    time = millis();
-    Serial.println(time);
+void read_and_send_data() {
+  // Obtém medidas do sensor
+  digitalWrite(LDR_VIN_PIN, HIGH);
+  float ldr_measure = get_ldr_value();
+  
+  // Transmite os dados
+  digitalWrite(TX_VIN_PIN, HIGH);
+  mySwitch.send(NODE_ID, 24);
+  mySwitch.send(int(ldr_measure), 24);
 }
 
 void setup() {
-    Serial.println("Setup...");
-    // MY SWITCH INICIO
-    pinMode(8, OUTPUT);
-    // mySwitch.enableTransmit(6);
-    // mySwitch.setRepeatTransmit(10);
-    // MY SWITCH FIM
+  // Configura pinos de alimentação do sensor e RF
+  pinMode(LDR_VIN_PIN, OUTPUT);
+  pinMode(TX_VIN_PIN, OUTPUT);
 
-    // VIRTUAL WIRE INICIO
-    // Initialise the IO and ISR
-    vw_set_ptt_inverted(true); // Required for DR3100
-    vw_set_tx_pin(6);
-    vw_setup(2000);	 // Bits per sec
-    // VIRTUAL WIRE FIM 
-
-    Serial.begin(9600);
-}
-
-void checkLowPowerStateConsumption() {
-    while (true)
-        // Fica 8 segundos neste modo
-        LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-}
-
-float checkLDRreadingConsumption() {
-    /*  Verifica o consumo em cada leitura 
-        Com 500 valores + média destes valores =~ 100ms
-    */
-    float currentStatus = getCurrentStatus();
-    
-    return currentStatus;
-}
-
-void sendData() {
-    String x = "teste";
-    mySwitch.send(x.toInt(), 24);
-}
-
-void checkTXConsumption_RCSWITCH() {
-    // Verifica consumo na transmissÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o
-    // TODO: Testar com a 'VirtualWire' e com a 'RC Switch'
-    sendData();
-}
-
-void transmitData(const char *data) {
-  vw_send((uint8_t *)data, strlen(data));
-  vw_wait_tx();
-}
-
-void sendPacket(String status) {
-    /*
-        Tempo total de transmissão =~ 222ms
-    */
-    const char *start = "T1START";
-    transmitData(start);
-    //   delay(50);
-
-    char payloadBuffer[10];
-    status.toCharArray(payloadBuffer, 10);
-    transmitData(payloadBuffer);
-    //   delay(50);
-
-    const char *end = "T1END";
-    transmitData(end);
-}
-
-void sleep() {
-    // Mantém os pinos de alimentação do LDR e RF com V = 0V
-    // digitalWrite(RF_VCC, LOW);
-    // digitalWrite(LDR_VCC, LOW);
-
-    for (int i = 0; i < SLEEP_TIME * 8; i++)
-        LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  // Configura pino de dados do RF
+  mySwitch.enableTransmit(TX_DATA_PIN);
 }
 
 void loop() {
-    getCurrentTimeAndPrint();
-    
-    float current = checkLDRreadingConsumption();
-    sendPacket(String(650));
+  // Modo de baixo consumo
+  for (int i = 0; i < TIME_SLEEPING; i++) {
+    LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF); 
+  }
 
-    getCurrentTimeAndPrint();
-    
-    // delay(1000);
-    // Serial.print("LDR: "); Serial.println(current);
-    delay(10000);
+  // Lê amostras do sensor e transmite informação
+  read_and_send_data();
+
+  // Volta ao modo de baixo consumo
+  digitalWrite(LDR_VIN_PIN, LOW);
+  digitalWrite(TX_VIN_PIN, LOW);
 }
-
-
-
-
