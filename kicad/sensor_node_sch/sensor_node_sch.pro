@@ -1,4 +1,4 @@
-update=qui 08 nov 2018 12:53:36 -02
+update=qui 08 nov 2018 11:33:51 -02
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,8 +23,6 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=
@@ -61,14 +59,5 @@ LibName29=opto
 LibName30=atmel
 LibName31=contrib
 LibName32=valves
-LibName33=nano
-[schematic_editor]
+[general]
 version=1
-PageLayoutDescrFile=
-PlotDirectoryName=
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
