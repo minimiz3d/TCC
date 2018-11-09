@@ -48,7 +48,10 @@ void loop() {
   }
 
   // Lê amostras do sensor e transmite informação
-  read_and_send_data();
+  for (int i = 0; i < 1000; i++) {
+    read_and_send_data();
+  }
+    // read_and_send_data();
 
   // Volta ao modo de baixo consumo
   digitalWrite(LDR_VIN_PIN, LOW);

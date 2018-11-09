@@ -2,13 +2,13 @@
 var num_vagas_disponiveis = "0";
 var marker;
 
-// Create a client instance
+// Instancia um cliente Paho MQTT
 HOST = "broker.hivemq.com"
 PORT = 8000
-CLIENT_ID = "arthur_teste"
+CLIENT_ID = "frontend_test"
 client = new Paho.MQTT.Client(HOST, PORT, CLIENT_ID)
 
-// connect the client
+// Define as configurações de conexão
 var connectionOptions = {
   keepAliveInterval: 20,
   timeout: 3,
@@ -16,19 +16,24 @@ var connectionOptions = {
 }
 client.connect(connectionOptions);
 
-
-// called when the client connects
+// Método chamado quando o cliente se conectar ao broker
 function onConnect() {
-  // Once a connection has been made, make a subscription and send a message.
-  console.log("entrou");
-  marker.setLabel("on");
+  // Conexão realizada, então se inscreve no tópico desejado
+  console.log("Iniciando...");
+  marker.setLabel("?");
   
   var topic = "vagas/cpd/"
   client.subscribe(topic);
   console.log("Inscrito em: " + topic)
 }
 
-// called when the client loses its connection
+// Método chamado quando chegam novas informações sobre as vagas monitoradas
+client.onMessageArrived = function (message) {
+  console.log("onMessageArrived:" + message.payloadString);
+  marker.setLabel(message.payloadString);
+}
+
+// Método chamado quando o cliente perde conexão com o broker
 client.onConnectionLost = function (responseObject) {
   marker.setLabel("123");
   if (responseObject.errorCode !== 0) {
@@ -36,17 +41,11 @@ client.onConnectionLost = function (responseObject) {
   }
 }
 
-// called when a message arrives
-client.onMessageArrived = function (message) {
-  console.log("onMessageArrived:" + message.payloadString);
-  marker.setLabel(message.payloadString);
-}
-
 // Inicializa mapa
 function initMap() {
-  var coords = { lat: -29.720415, lng: -53.7141605 };
+  var coords = { lat: -29.720966, lng: -53.714431};
   var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 17,
+    zoom: 18,
     center: coords,
     scrollwheel: false
   });

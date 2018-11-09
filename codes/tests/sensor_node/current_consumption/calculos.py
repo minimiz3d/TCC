@@ -23,16 +23,16 @@ class Consumo:
         consumo_tx = self.get_consumo_mah(self.t_tx, self.i_tx)
         total = consumo_off + consumo_sensor + consumo_tx
 
-        print(
-            "**** CONSUMOS [mAh] ****\nOFF: %s\nSENSOR: %s\nTX: %s\n> TOTAL: %s" % 
-            (consumo_off, consumo_sensor, consumo_tx, total)
-        )
+        # print(
+        #     "**** CONSUMOS [mAh] ****\nOFF: %s\nSENSOR: %s\nTX: %s\n> TOTAL: %s" % 
+        #     (consumo_off, consumo_sensor, consumo_tx, total)
+        # )
 
         return consumo_off + consumo_sensor + consumo_tx
 
     def _get_num_ciclos(self):
         num_ciclos = self.capacidade_bat / self.get_consumo_total() 
-        print("CICLOS: %s" % num_ciclos)
+        # print("CICLOS: %s" % num_ciclos)
         return num_ciclos
 
     def _get_tempo_total(self):
@@ -40,7 +40,7 @@ class Consumo:
 
     def _get_num_horas(self):
         num_horas = self._get_num_ciclos()/(3600/self._get_tempo_total())
-        print("HORAS: %s" % num_horas)
+        # print("HORAS: %s" % num_horas)
         return num_horas
 
     def get_num_dias(self):
@@ -48,12 +48,12 @@ class Consumo:
 
 
 if __name__ == '__main__':
-    consumo = Consumo(capacidade_bat=2348)
+    # consumo = Consumo(capacidade_bat=2348, t_off=10)
     
-    num_dias = consumo.get_num_dias()
-    print("DIAS: %s" % num_dias)  
-    print("MESES: %s" % (num_dias/30))
-    print("ANOS: %s" % ((num_dias/30)/12))
+    # num_dias = consumo.get_num_dias()
+    # print("DIAS: %s" % num_dias)  
+    # print("MESES: %s" % (num_dias/30))
+    # print("ANOS: %s" % ((num_dias/30)/12))
 
     import re
     resumo = """
@@ -61,3 +61,9 @@ if __name__ == '__main__':
     """
     count = len(re.findall(r'\w+', resumo))
     print(count)
+
+    tempos = [5, 10, 15, 20, 25, 30]
+    for tempo in tempos:
+        consumo_atual = Consumo(capacidade_bat=2850, t_off=tempo)
+        print(consumo_atual.get_num_dias()/30)
+    
