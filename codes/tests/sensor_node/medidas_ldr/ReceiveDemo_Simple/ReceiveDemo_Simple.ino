@@ -21,10 +21,10 @@ void loop() {
     Serial.print(mySwitch.getReceivedValue());
     Serial.print(" - Tempo: ");
     Serial.println(millis());
-    // Serial.print( mySwitch.getReceivedBitlength() );
-    // Serial.print("bit ");
-    // Serial.print("Protocol: ");
-    // Serial.println( mySwitch.getReceivedProtocol() );
+    Serial.print( mySwitch.getReceivedBitlength() );
+    Serial.print("bit ");
+    Serial.print("Protocol: ");
+    Serial.println( mySwitch.getReceivedProtocol() );
 
     mySwitch.resetAvailable();
   }
