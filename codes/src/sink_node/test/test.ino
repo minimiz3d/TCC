@@ -3,6 +3,11 @@
 #include "libs/lmic.h"
 #include "libs/hal/hal.h"
 
+// debug
+static uint8_t mydata[] = "Hello World!";
+static osjob_t sendjob;
+uint8_t flag_sent = 1;
+
 // LoRaWAN Network Session Key
 static const PROGMEM u1_t NWKSKEY[16] = {0x15, 0xFF, 0x21, 0xBF, 0x19, 0x6A, 0x2F, 0xC4, 0xE3, 0x23, 0x06, 0xB6, 0x97, 0xFD, 0xEE, 0x53};
 
@@ -14,10 +19,10 @@ static const u4_t DEVADDR = 0x26031A32;
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
-    .nss = 6,
+    .nss = 8,
     .rxtx = LMIC_UNUSED_PIN,
     .rst = 5,
-    .dio = {2, 3, 4},
+    .dio = {2, 6, 4},
 };
 
 // These callbacks are only used in over-the-air activation, so they are
@@ -26,13 +31,6 @@ const lmic_pinmap lmic_pins = {
 void os_getArtEui(u1_t *buf) {}
 void os_getDevEui(u1_t *buf) {}
 void os_getDevKey(u1_t *buf) {}
-
-static osjob_t sendjob;
-uint8_t myData[] = "envio de teste";
-
-// Schedule TX every this many seconds (might become longer due to duty
-// cycle limitations).
-const unsigned TX_INTERVAL = 10;
 
 void onEvent (ev_t ev) {
     Serial.print(os_getTime());
@@ -76,7 +74,8 @@ void onEvent (ev_t ev) {
             }
 
             // Schedule next transmission
-            os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
+            // os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
+            flag_sent = 1;
 
             break;
         case EV_LOST_TSYNC:
@@ -95,7 +94,7 @@ void onEvent (ev_t ev) {
         case EV_LINK_ALIVE:
             Serial.println(F("EV_LINK_ALIVE"));
             break;
-         default:
+         default:delay(3000);
             Serial.println(F("Unknown event"));
             break;
     }
@@ -103,7 +102,8 @@ void onEvent (ev_t ev) {
 
 void do_send(osjob_t* j) {
     // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & OP_TXRXPEND) {
+    // if (LMIC.opmode & OP_TXRXPEND) {
+    if (LMIC.opmode & (1 << 7)) {
         Serial.println(F("OP_TXRXPEND, not sending"));
     } else {
         // Prepare upstream data transmission at the next possible time.
@@ -117,14 +117,17 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Iniciando setup");
 
+    #ifdef VCC_ENABLE
+    pinMode(VCC_ENABLE, OUTPUT);
+    digitalWrite(VCC_ENABLE, HIGH);
+    delay(1000);
+    #endif       
+
     // LMIC init
     os_init();
     
     // Reset the MAC state. Session and pending data transfers will be discarded.
     LMIC_reset();
-
-    // If not running an AVR with PROGMEM, just use the arrays directly
-    LMIC_serxloratSession(0x1, DEVADDR, NWKSKEY, APPSKEY);
 
     // Set static session parameters. Instead of dynamically establishing a session
     // by joining the network, precomputed session parameters are be provided.
@@ -150,6 +153,9 @@ void setup() {
     LMIC_selectSubBand(1);
     #endif
 
+    // Disable data rate adaptation
+    LMIC_setAdrMode(0);
+
     // Disable link check validation
     LMIC_setLinkCheckMode(0);
 
@@ -167,8 +173,22 @@ void setup() {
     */
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(DR_SF12, 14);
+
+    // LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
+
+    // do_send(&sendjob);
 }
 
 void loop() {
+    if (flag_sent) {
+        do_send(&sendjob);
+        flag_sent = 0;
+    }
     os_runloop_once();
+    
+    // do_send(&sendjob);
+    // while (1) {
+    //     os_runloop_once();
+    //     delay(1000);
+    // }
 }
