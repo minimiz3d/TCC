@@ -1,5 +1,6 @@
 #include <LowPower.h>
-#include <RCSwitch.h>
+#include <VirtualWire.h>
+// #include <RCSwitch.h>
 
 #define NUM_SAMPLES 500
 #define LDR_THRESHOLD 600
@@ -10,7 +11,7 @@
 #define TIME_SLEEPING 5
 #define NODE_ID 0
 
-RCSwitch mySwitch = RCSwitch();
+// RCSwitch mySwitch = RCSwitch();
 
 float get_ldr_value() {
   // Obtém amostras do LDR
@@ -28,8 +29,13 @@ void read_and_send_data() {
   
   // Transmite os dados
   digitalWrite(TX_VIN_PIN, HIGH);
-  mySwitch.send(NODE_ID, 24);
-  mySwitch.send(int(ldr_measure), 24);
+  String ldr_measure_string = String(int(ldr_measure));
+  char buffer[10];
+  ldr_measure_string.toCharArray(buffer, 10);
+  vw_send(buffer,   strlen(buffer));
+  vw_wait_tx();
+  // mySwitch.send(NODE_ID, 24);
+  // mySwitch.send(int(ldr_measure), 24);
 }
 
 void setup() {
@@ -38,7 +44,9 @@ void setup() {
   pinMode(TX_VIN_PIN, OUTPUT);
 
   // Configura pino de dados do RF
-  mySwitch.enableTransmit(TX_DATA_PIN);
+  vw_setup(2000);
+  vw_set_tx_pin(TX_DATA_PIN);
+  // mySwitch.enableTransmit(TX_DATA_PIN);
 }
 
 void loop() {

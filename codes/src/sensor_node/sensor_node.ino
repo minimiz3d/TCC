@@ -10,6 +10,7 @@
 #define TIME_SLEEPING 30
 #define NODE_ID 0
 
+// Instancia objeto de comunicação
 RCSwitch mySwitch = RCSwitch();
 
 float get_ldr_value() {
@@ -53,7 +54,3 @@ void loop() {
   digitalWrite(LDR_VIN_PIN, LOW);
   digitalWrite(TX_VIN_PIN, LOW);
 }
-
-
-
-
