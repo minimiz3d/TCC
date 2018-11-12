@@ -82,7 +82,7 @@ def plot_ldr_eff():
     ]
     p_array = np.array(percentages)               
     fig, ax2 = plt.subplots()
-    # ax2 = ax.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.set_xlabel("Tempo (h)")
 
     N = 11
     width = 0.25
@@ -121,5 +121,5 @@ def plot_ldr_eff():
 
 
 if __name__ == "__main__":
-    # plot_ldr_eff()
-    plot_lum_level()
+    plot_ldr_eff()
+    # plot_lum_level()
