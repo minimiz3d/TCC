@@ -121,4 +121,5 @@ def plot_ldr_eff():
 
 
 if __name__ == "__main__":
-    plot_ldr_eff()
+    # plot_ldr_eff()
+    plot_lum_level()
