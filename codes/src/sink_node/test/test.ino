@@ -1,10 +1,11 @@
-#include <VirtualWire.h>
+// #include <VirtualWire.h>
 #include <SPI.h>
 #include "libs/lmic.h"
 #include "libs/hal/hal.h"
+#define TX_INTERVAL 60
 
 // debug
-static uint8_t mydata[] = "Hello World!";
+static uint8_t mydata[64] = "Hello World!";
 static osjob_t sendjob;
 uint8_t flag_sent = 1;
 
@@ -73,8 +74,6 @@ void onEvent (ev_t ev) {
               Serial.println(F(" bytes of payload"));
             }
 
-            // Schedule next transmission
-            // os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
             flag_sent = 1;
 
             break;
@@ -101,19 +100,31 @@ void onEvent (ev_t ev) {
 }
 
 void do_send(osjob_t* j) {
+    delay(1);
+    Serial.print("Time: ");
+    Serial.println(millis()/1000);
+    Serial.print("Send, txChn: ");
+    Serial.println(LMIC.txChnl);
+    Serial.println("Opmode check: ");
+
     // Check if there is not a current TX/RX job running
     // if (LMIC.opmode & OP_TXRXPEND) {
     if (LMIC.opmode & (1 << 7)) {
         Serial.println(F("OP_TXRXPEND, not sending"));
     } else {
         // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0);
+        strcpy((char *) mydata, "{\"Lorenz\":\"Teste\"}");
+        LMIC_setTxData2(1, mydata, strlen((char *)mydata), 0);
         Serial.println(F("Packet queued"));
     }
-    // Next TX is scheduled after TX_COMPLETE event.
+
+    flag_sent = 1;
+    // Schedule next transmission
+    // os_setTimedCallback(j, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
 }
 
 void setup() {
+    delay(1000);
     Serial.begin(9600);
     Serial.println("Iniciando setup");
 
@@ -154,10 +165,15 @@ void setup() {
     #endif
 
     // Disable data rate adaptation
-    LMIC_setAdrMode(0);
+    LMIC_setAdrMode(1);
 
     // Disable link check validation
     LMIC_setLinkCheckMode(0);
+
+    // TESTE
+    LMIC_stopPingable();
+    LMIC_disableTracking();
+    LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
 
     // TTN uses SF9 for its RX2 window.
     LMIC.dn2Dr = DR_SF9;
@@ -174,8 +190,6 @@ void setup() {
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(DR_SF12, 14);
 
-    // LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
-
     // do_send(&sendjob);
 }
 
@@ -188,7 +202,8 @@ void loop() {
     
     // do_send(&sendjob);
     // while (1) {
-    //     os_runloop_once();
-    //     delay(1000);
+        // os_runloop_once();
+        // delay(100);
     // }
+    // os_runloop_once();
 }
