@@ -4,6 +4,9 @@
 #include "libs/hal/hal.h"
 #define TX_INTERVAL 60
 
+// TESTAR
+#define CHANNEL  0
+
 // debug
 static uint8_t mydata[64] = "Hello World!";
 static osjob_t sendjob;
@@ -163,6 +166,13 @@ void setup() {
     // https://github.com/TheThingsNetwork/gateway-conf/blob/master/US-global_conf.json
     LMIC_selectSubBand(1);
     #endif
+    
+    // TESTAR
+    for (uint8_t i = 0; i < 9; i++) {
+        if (i != CHANNEL) {
+            LMIC_disableChannel(i);
+        }
+    }
 
     // Disable data rate adaptation
     LMIC_setAdrMode(1);
