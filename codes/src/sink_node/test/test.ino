@@ -168,7 +168,7 @@ void setup() {
     #endif
     
     // TESTAR
-    for (uint8_t i = 0; i < 9; i++) {
+    for (uint8_t i = 0; i < 9; i++) { // For EU; for US use i<71
         if (i != CHANNEL) {
             LMIC_disableChannel(i);
         }
@@ -197,6 +197,7 @@ void setup() {
     DR_SF7  : DR5
     DR_SF8C : DR6
     */
+   
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(DR_SF12, 14);
 
