@@ -90,7 +90,7 @@ p_array = np.array(percentages)
 ax2 = ax.twinx()  # instantiate a second axes that shares the same x-axis
 
 color = 'limegreen'
-ax2.set_ylabel('Taxa de assertividade (%)', color=color)  # we already handled the x-label with ax1
+ax2.set_ylabel('Taxa de assertividade (%)', color='black')  # we already handled the x-label with ax1
 ax2.plot(
     np.arange(start=width/2, stop=N, step=1), 
     p_array, 
@@ -109,7 +109,7 @@ ax2.plot(
     marker='o',
     label="Mal estacionado"
 )
-ax2.tick_params(axis='y', labelcolor=color)
+ax2.tick_params(axis='y', labelcolor='black')
 ax2.grid(which='major', linestyle='-', linewidth='0.25', color='gray')
 ax2.legend(loc='best')
 plt.yticks(np.arange(start=65, stop=101, step=5))

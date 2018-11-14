@@ -20,7 +20,7 @@ client.connect(connectionOptions);
 function onConnect() {
   // Conexão realizada, então se inscreve no tópico desejado
   console.log("Iniciando...");
-  marker.setLabel("?");
+  marker.setLabel("1");
   
   var topic = "vagas/cpd/"
   client.subscribe(topic);

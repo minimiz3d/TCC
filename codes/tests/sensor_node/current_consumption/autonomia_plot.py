@@ -20,7 +20,7 @@ if __name__ == '__main__':
         tempos, 
         autonomias,
         marker='o',
-        label="CapBat = 2348mAh"
+        label="Capacidade da bateria = 2348mAh"
     )
     debug = [
         3.510370519532823,
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         tempos, 
         debug, 
         marker='o',
-        label="CapBat = 2850mAh"
+        label="Capacidade da bateria = 2850mAh"
     )
     ax.legend(loc='upper left')
     ax.grid()
