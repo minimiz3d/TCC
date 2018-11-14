@@ -4,6 +4,9 @@
 #include "libs/hal/hal.h"
 #define TX_INTERVAL 60
 
+// TESTAR
+#define CHANNEL  0
+
 // debug
 static uint8_t mydata[64] = "Hello World!";
 static osjob_t sendjob;
@@ -163,6 +166,13 @@ void setup() {
     // https://github.com/TheThingsNetwork/gateway-conf/blob/master/US-global_conf.json
     LMIC_selectSubBand(1);
     #endif
+    
+    // TESTAR
+    for (uint8_t i = 0; i < 9; i++) { // For EU; for US use i<71
+        if (i != CHANNEL) {
+            LMIC_disableChannel(i);
+        }
+    }
 
     // Disable data rate adaptation
     LMIC_setAdrMode(1);
@@ -187,6 +197,7 @@ void setup() {
     DR_SF7  : DR5
     DR_SF8C : DR6
     */
+   
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(DR_SF12, 14);
 
