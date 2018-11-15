@@ -35,7 +35,7 @@ client.onMessageArrived = function (message) {
 
 // Método chamado quando o cliente perde conexão com o broker
 client.onConnectionLost = function (responseObject) {
-  marker.setLabel("123");
+  marker.setLabel("OFF");
   if (responseObject.errorCode !== 0) {
     console.log("onConnectionLost:" + responseObject.errorMessage);
   }
@@ -55,16 +55,5 @@ function initMap() {
     animation: google.maps.Animation.DROP,
     label: num_vagas_disponiveis,
     map: map
-  });
-  marker.addListener('click', toggleBounce);
+  });  
 }
-
-// Anima o 'marker'
-function toggleBounce() {
-  if (marker.getAnimation() !== null) {
-    marker.setAnimation(null);
-  } else {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-  }
-}
-
